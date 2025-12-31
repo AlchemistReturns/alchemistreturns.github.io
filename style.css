@@ -1,24 +1,28 @@
 :root {
-    /* Colors */
-    --bg-color: #030712;
-    /* Deepest Blue/Black */
-    --surface-color: #111827;
-    /* Slightly lighter for cards if needed, but we use glass */
-    --text-primary: #f8fafc;
-    /* White-ish */
-    --text-secondary: #94a3b8;
-    /* Muted Blue-Grey */
-    --accent-primary: #2dd4bf;
-    /* Teal */
-    --accent-secondary: #3b82f6;
-    /* Blue */
-    --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    /* Colors - Vibrant Aurora */
+    --bg-color: #0f0c29;
+    /* Deep Violet Black */
+    --surface-color: rgba(255, 255, 255, 0.03);
+
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+
+    /* Gradients & Accents */
+    --accent-primary: #c084fc;
+    /* Soft Orchid */
+    --accent-secondary: #333399;
+    /* Deep Indigo */
+    --accent-tertiary: #00d4ff;
+    /* Cyan */
+
+    --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+    --glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
 
     /* Decoration */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-blur: 10px;
-    --glow-shadow: 0 0 20px rgba(45, 212, 191, 0.2);
+    --glass-bg: rgba(17, 25, 40, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-blur: 20px;
+    --glow-shadow: 0 0 30px rgba(255, 0, 204, 0.25);
 
     /* Fonts */
     --font-heading: 'Outfit', sans-serif;
@@ -73,6 +77,63 @@ ul {
     list-style: none;
 }
 
+/* Background Animations */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: var(--bg-color);
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 10s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--accent-primary);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-secondary);
+    bottom: -50px;
+    right: -50px;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: var(--accent-tertiary);
+    top: 40%;
+    left: 40%;
+    animation: float 15s infinite reverse ease-in-out;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(30px, 50px) scale(1.1);
+    }
+}
+
 /* Layout Utilities */
 .container {
     max-width: 1000px;
@@ -98,9 +159,24 @@ ul {
 
 .btn-primary {
     background: var(--accent-gradient);
-    color: #000;
-    /* Contrast text on bright gradient */
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    background-size: 200% auto;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(255, 0, 204, 0.4);
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+
+    100% {
+        background-position: 0% 50%
+    }
 }
 
 .btn-outline {
@@ -118,15 +194,34 @@ ul {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(var(--glass-blur));
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 2rem;
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--glass-shine);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-primary);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3), var(--glow-shadow);
+}
+
+.card:hover::before {
+    opacity: 1;
 }
 
 /* Gradient Text Utility */
@@ -161,8 +256,7 @@ ul {
     display: flex;
     align-items: center;
     position: relative;
-    background: radial-gradient(circle at top right, rgba(45, 212, 191, 0.1), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 40%);
+    /* Background removed to show animated blobs */
 }
 
 .hero-content {
@@ -309,7 +403,7 @@ ul {
 }
 
 .skill-card i {
-    color: var(--accent-secondary);
+    color: var(--accent-primary);
 }
 
 /* Timeline/Education */
