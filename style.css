@@ -210,6 +210,10 @@ ul {
     .hero .subtitle {
         font-size: 1.2rem;
     }
+
+    .contact-links {
+        justify-content: center;
+    }
 }
 
 /* Projects Section */
