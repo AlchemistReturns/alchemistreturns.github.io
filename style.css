@@ -434,8 +434,7 @@ ul {
 /* Fix for Achievement Image on larger screens */
 @media (min-width: 768px) {
     #achievements .project-thumb {
-        height: auto;
-        height: 400px;
+        min-height: 300px;
     }
 
     #achievements .project-thumb img {
