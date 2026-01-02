@@ -162,8 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create hidden button
     const footer = document.querySelector('footer');
     if (footer) {
+        // Prevent duplicates (fix for HMR/reloads)
+        const existingBtn = document.getElementById('easter-egg-btn');
+        if (existingBtn) existingBtn.remove();
+
         const easterEggBtn = document.createElement('button');
-        easterEggBtn.textContent = "don't click";
+        easterEggBtn.id = 'easter-egg-btn';
+        easterEggBtn.textContent = "DON'T CLICK";
         easterEggBtn.style.cssText = `
             position: absolute;
             bottom: 10px;
@@ -176,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             font-size: 0.8rem;
             cursor: pointer;
             transition: opacity 0.5s;
+            z-index: 100;
         `;
         footer.style.position = 'relative';
         footer.appendChild(easterEggBtn);
@@ -189,44 +195,53 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        let isPartyMode = false;
+        let partyInterval;
+
         easterEggBtn.addEventListener('click', () => {
-            easterEggBtn.textContent = "PARTY MODE ACTIVATED!";
-            partyMode();
-        });
-    }
+            isPartyMode = !isPartyMode;
 
-    function partyMode() {
-        // Rainbow everything
-        const duration = 15 * 1000;
-        const animationEnd = Date.now() + duration;
-
-        // Continuous confetti
-        const interval = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
+            if (isPartyMode) {
+                easterEggBtn.textContent = "WELCOME TO THE PARTY. CLICK TO STOP";
+                startParty();
+            } else {
+                easterEggBtn.textContent = "DON'T CLICK";
+                stopParty();
             }
+        });
 
+        function startParty() {
+            // Continuous Skew Confetti
+            const duration = 15 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+            partyInterval = setInterval(function () {
+                const particleCount = 50;
+
+                // Since particles fall down, start a bit higher than random
+                confetti(Object.assign({}, defaults, {
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                }));
+                confetti(Object.assign({}, defaults, {
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                }));
+            }, 250);
+
+            // Initial celebratory burst
             confetti({
-                particleCount: 20,
-                startVelocity: 30,
-                spread: 360,
-                origin: {
-                    x: Math.random(),
-                    // since they fall down, start a bit higher than random
-                    y: Math.random() - 0.2
-                }
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
             });
-        }, 250);
+        }
 
-        // Rainbow tint
-        const root = document.documentElement;
-        let hue = 0;
-        const colorInterval = setInterval(() => {
-            if (Date.now() > animationEnd) clearInterval(colorInterval);
-            hue = (hue + 10) % 360;
-            root.style.setProperty('--accent-hue', hue);
-        }, 100);
+        function stopParty() {
+            clearInterval(partyInterval);
+            confetti.reset();
+        }
     }
 });
