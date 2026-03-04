@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isDeleting && charIndex === currentPhrase.length) {
             isDeleting = true;
             typeSpeed = 2000; // Pause at end
-        } else if (isDeleting && charIndex === 0) {
+        } else if (isDeleting && charIndex === 1) { // Keep "I" constant
             isDeleting = false;
             phraseIndex = (phraseIndex + 1) % phrases.length;
             typeSpeed = 500; // Pause before new phrase
