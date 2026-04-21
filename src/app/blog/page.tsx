@@ -50,7 +50,7 @@ export default async function BlogPage() {
         <section className="section" style={{ paddingTop: 0 }}>
           <div className="container">
             <div className="blog-grid">
-              {posts.map((post) => (
+              {posts.map((post: any) => (
                 <Link
                   key={post._id}
                   href={`/blog/${post.slug}`}
