@@ -4,22 +4,34 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { placeholderPosts, getPostBySlug } from "@/lib/blogData";
+import { client } from "@/sanity/client";
+import { postBySlugQuery, allPostsQuery } from "@/sanity/queries";
+import { PortableText } from "@portabletext/react";
+import imageUrlBuilder from "@sanity/image-url";
+
+const builder = imageUrlBuilder(client);
+
+function urlFor(source: any) {
+  return builder.image(source).auto("format").fit("max");
+}
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// Generate static params for all placeholder posts
+// Generate static params for all Sanity posts
 export async function generateStaticParams() {
-  return placeholderPosts.map((post) => ({ slug: post.slug }));
+  const posts = await client.fetch(allPostsQuery);
+  return posts.map((post: { slug: string }) => ({ slug: post.slug }));
 }
 
 // Generate per-post metadata
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await client.fetch(postBySlugQuery, { slug });
+  
   if (!post) return {};
+  
   return {
     title: `${post.title} — Abrar Mahmud Hasan`,
     description: post.excerpt,
@@ -34,27 +46,9 @@ function formatDate(dateStr: string) {
   });
 }
 
-/**
- * Very lightweight Markdown → HTML renderer for placeholder content.
- * This will be replaced by Sanity PortableText renderer after CMS integration.
- */
-function renderMarkdown(md: string): string {
-  return md
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code>$1</code>")
-    .replace(/^- (.+)$/gm, "<li>$1</li>")
-    .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/^(?!<[hup])/gm, "")
-    .trim();
-}
-
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await client.fetch(postBySlugQuery, { slug });
 
   if (!post) notFound();
 
@@ -91,7 +85,7 @@ export default async function BlogPostPage({ params }: Props) {
           {post.coverImage && (
             <div className="blog-post-cover">
               <Image
-                src={post.coverImage}
+                src={urlFor(post.coverImage).width(720).url()}
                 alt={post.title}
                 width={720}
                 height={380}
@@ -101,18 +95,9 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           )}
 
-          <article
-            className="blog-post-body"
-            /* 
-              NOTE: dangerouslySetInnerHTML is used here with our own simple 
-              markdown renderer for placeholder content only.
-              When Sanity is integrated, this will be replaced with 
-              @portabletext/react for safe rendering of rich text.
-            */
-            dangerouslySetInnerHTML={{
-              __html: post.body ? `<p>${renderMarkdown(post.body)}</p>` : "",
-            }}
-          />
+          <article className="blog-post-body">
+            {post.body && <PortableText value={post.body} />}
+          </article>
         </div>
       </main>
       <Footer />

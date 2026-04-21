@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { placeholderPosts } from "@/lib/blogData";
+import { client } from '@/sanity/client'
+import { allPostsQuery } from '@/sanity/queries'
+export const revalidate = 60 // ISR: revalidate every 60s
 
 export const metadata: Metadata = {
   title: "Blog — Abrar Mahmud Hasan",
@@ -19,8 +21,8 @@ function formatDate(dateStr: string) {
   });
 }
 
-export default function BlogPage() {
-  const posts = placeholderPosts;
+export default async function BlogPage() {
+  const posts = await client.fetch(allPostsQuery)
 
   return (
     <>
