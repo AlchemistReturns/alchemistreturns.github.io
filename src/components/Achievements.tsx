@@ -63,7 +63,7 @@ export default function Achievements() {
         <div className="projects-grid">
           {achievements.map((item) => (
             <article className="card project-card" key={item.title + item.headline}>
-              <div className="project-thumb">
+              {/* <div className="project-thumb">
                 <Image
                   src={item.image}
                   alt={item.alt}
@@ -71,7 +71,7 @@ export default function Achievements() {
                   height={210}
                   style={{ objectFit: "cover", width: "100%", height: "100%" }}
                 />
-              </div>
+              </div> */}
               <div className="project-body">
                 <header className="card-header">
                   <i

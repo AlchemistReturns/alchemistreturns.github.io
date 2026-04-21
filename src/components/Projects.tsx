@@ -84,7 +84,7 @@ export default function Projects() {
         <div className="projects-grid">
           {projects.map((project) => (
             <article className="card project-card" key={project.title}>
-              <div className="project-thumb">
+              {/* <div className="project-thumb">
                 <Image
                   src={project.image}
                   alt={project.alt}
@@ -92,7 +92,7 @@ export default function Projects() {
                   height={210}
                   style={{ objectFit: "cover", width: "100%", height: "100%" }}
                 />
-              </div>
+              </div> */}
               <div className="project-body">
                 <header className="card-header">
                   <i className={`${project.icon} project-icon`} aria-hidden="true" />
